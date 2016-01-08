@@ -1,18 +1,19 @@
 #!/usr/bin/env node
-// producer file
 
 var express = require('express');
 var app = express();
-var server = require('http').createServer(app); // Attach the Express app
+
+// Start server and attach the Express app
+var server = require('http').createServer(app);
 var kue = require('kue');
 var queue = require('./queue/index.js');
 
 
 server.listen(3000, function() {
-    console.log('Server listening on port 3000');
+    console.log('Process ' + process.pid + ' listening on port 3000');
 });
 
-// adds new jobs to queue
+// add new job to queue
 app.get('/api/', function(req, res, next) {
    
     var job = queue.create('new request', {uri: req.query.url});
@@ -31,7 +32,7 @@ app.get('/api/', function(req, res, next) {
     });
  });
 
-
+// get status/results of job
 app.get('/api/:id', function(req, res, next) {
 
     var id = req.params.id;
@@ -62,7 +63,6 @@ app.get('/api/:id', function(req, res, next) {
             var state = job.state();
     
             job.remove(function(err) {
-                // remove job from queue
                 if (!err) console.log('removed completed job #%d, job.id');
                 res.send(result);
             });
@@ -70,7 +70,6 @@ app.get('/api/:id', function(req, res, next) {
     });
 
 });
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next){
