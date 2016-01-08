@@ -1,7 +1,3 @@
-/* Create a job queue whose workers fetch data from a 
-URL and store the results in a database.  The job queue should 
-expose a REST API for adding jobs and checking their status / results */
-
 var redis = require('redis');
 var kue = require('kue');
 var express = require('express');
@@ -20,11 +16,11 @@ redisClient.on('connect', function() {
 
 queue
     .on('job enqueue', function(id, type) {
-        console.log('Job ', id, ' for ', type, ' has been added to queue');
+        console.log('Job ', id, ' has been added to queue');
     })
     .on('job complete', function(id, result) {
         kue.Job.get(id, function(err, job) {
-            if (!err) console.log("Job complete - results are store in job.result");
+            if (!err) console.log("Job complete - results are stored in job.result");
         });
     })
     .on('error', function(err) {

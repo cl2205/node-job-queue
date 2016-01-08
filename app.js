@@ -60,10 +60,9 @@ app.get('/api/:id', function(req, res, next) {
         } else {
 
             var result = job.result;
-            var state = job.state();
     
             job.remove(function(err) {
-                if (!err) console.log('removed completed job #%d, job.id');
+                if (!err) console.log('removed completed job, ' + job.id);
                 res.send(result);
             });
         }
