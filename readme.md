@@ -12,47 +12,47 @@ The queue should be able to:
 * send state information when a request is made for a specific job and the job has NOT completed
 * delete jobs from the queue once completed results have been delivered to the user
 
-
-### REST API Endpoints
-
-* **GET /api/?url=http://www.site.com**  
-  Adds a new job to the job queue and sends back the job ID to the user
-
-* **GET /api/:id** <br>
-   Checks the status of a job and sends back results if job is complete; job state if job is incomplete.
-
-
 ### How to Install
 
-1. Install Node.js
+1. Install [Node.js](https://nodejs.org/en/) and redis
+
+  ```$ brew install redis```
+
 2. Clone the node-job-queue repo link.
 
  ```$ git clone https://github.com/cl2205/node-job-queue.git```
- 
+
  ```$ cd node-job-queue```
 
 3. Run `npm install` to install dependencies.
-4. Have a redis-server running on your system 
+4. Have a redis-server running on your system
 
- ```$ src/redis-server```
- 
+ ```$ redis-server```
+
 5. Launch the app by running ```npm start``` in the project's root directory.
 
   ```$ npm start```
 
- The app will run on http://local host:3000.
+ The app will run on http://localhost:3000.
 
-### Test
+ ### REST API Endpoints
+
+ * **GET http://localhost:3000/api?url=http://www.site.com**  
+   Adds a new job to the job queue and sends back the job ID to the user
+
+ * **GET http://localhost:3000/api/:id** <br>
+    Checks the status of a job and sends back job state if job is incomplete; sends back html results if job is complete; 
+
+### Usage
+
+#### Using Kue UI to view job status
+In your browser, go to http://localhost:3000/queue
 
 #### Using POSTMAN
-POSTMAN is recommended for its convenient request builder features, and it can also render HTML responses in their "Preview" option. 
+POSTMAN has a convenient request builder to hit the REST API endpoints, and it can also render HTML responses in their "Preview" option.
 Specify a 'url' parameter key and value, and a composite URL will built for you.
 
 
-#### Using curl
-
-You can also use curl  - just remember to escape the special characters.
+#### Using browser or curl
 
 ``` $ curl http://localhost:3000/api\?url\=http://www.google.com ```
-
-

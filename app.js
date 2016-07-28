@@ -1,69 +1,64 @@
 #!/usr/bin/env node
+'use strict';
 
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
 // Start server and attach the Express app
-var server = require('http').createServer(app);
-var kue = require('kue');
-var queue = require('./queue/index.js');
-
+const server = require('http').createServer(app);
+const kue = require('kue');
+const queue = require('./queue');
+const port = process.env.PORT || 3000;
 
 server.listen(3000, function() {
-    console.log('Process ' + process.pid + ' listening on port 3000');
+    console.log('server listening at port', port);
 });
 
+// Kue Status-Checker UI
+app.use('/queue', kue.app);
+
 // add new job to queue
-app.get('/api/', function(req, res, next) {
-   
+app.get('/api', function(req, res, next) {
+
     var job = queue.create('new request', {uri: req.query.url});
 
     job.attempts(3).save(function(err) {
-        if (err) console.log(err);
+        if (err) next(err);
+        else {
+          var message = 'A new job has been added to the queue with job id: ' + job.id + '. Check your job status at http://localhost:3000/queue or http://localhost:3000/api/' + job.id;
+          var data = {
+              id: job.id,
+              message: message
+          };
 
-        var message = 'A new job has been added to the queue with job id: ' + job.id + '. Check your job status at http://localhost:3000/api/' + job.id;
-        var data = {
-            id: job.id,
-            message: message
-        };
-        
-        res.send(data);
-
+          res.send(data);
+        }
     });
  });
 
 // get status/results of job
 app.get('/api/:id', function(req, res, next) {
 
-    var id = req.params.id;
+    kue.Job.get(req.params.id, function(err, job) {
+        if (err) next(err);
 
-    kue.Job.get(id, function(err, job) {
-        if (err) console.log(err);
-
-        if (!job) {
-
+        else if (!job) {
             res.send('No such job found in queue');
+        }
 
-        // job is not complete - send current status
-        } else if (!job.result) {
-
-            var currentState = job.state();
+        else if (!job.result) {
             var status = {
                 id: job.id,
-                state: currentState,
+                state: job.state(),
                 message: 'Job state is currently: ' + job.state()
             };
-
             res.send(status);
 
-        // job is complete - send results and remove job from queue
+        // job is complete
         } else {
-
-            var result = job.result;
-    
             job.remove(function(err) {
-                if (!err) console.log('removed completed job, ' + job.id);
-                res.send(result);
+                if (err) next(err);
+                res.send(job.result);
             });
         }
     });
