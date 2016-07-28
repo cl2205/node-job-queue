@@ -35,7 +35,7 @@ The queue should be able to:
 
  The app will run on http://localhost:3000.
 
- ### REST API Endpoints
+### REST API Endpoints
 
  * **GET http://localhost:3000/api?url=http://www.site.com**  
    Adds a new job to the job queue and sends back the job ID to the user
@@ -45,14 +45,21 @@ The queue should be able to:
 
 ### Usage
 
-#### Using Kue UI to view job status
-In your browser, go to http://localhost:3000/queue
+#### Making requests/creating new jobs on the queue
 
-#### Using POSTMAN
-POSTMAN has a convenient request builder to hit the REST API endpoints, and it can also render HTML responses in their "Preview" option.
-Specify a 'url' parameter key and value, and a composite URL will built for you.
+  * POSTMAN has a convenient request builder to hit the REST API endpoints, and it can also render HTML responses in their   "Preview" option.
+   Specify a 'url' Params key and value, and a composite URL will built for you.
 
+  * Using browser or curl
 
-#### Using browser or curl
+   ``` $ curl http://localhost:3000/api\?url\=http://www.google.com ```
 
-``` $ curl http://localhost:3000/api\?url\=http://www.google.com ```
+#### Viewing job status 
+  * To check job status in Kue's UI, go to http://localhost:3000/queue, or 
+  * check job status/results by navigating to  http://localhost:3000/api/:id using your browser, POSTMAN, or curl.
+
+### Run Tests
+
+  Run 'npm test' in the project's root directory.
+  
+  ```$ npm test```
