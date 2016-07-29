@@ -27,7 +27,7 @@ describe('GET /api?siteURL', function() {
 });
 
 describe('GET /api/:id', function() {
-  it('should respond with job state in json response', function(done) {
+  it('should respond with json response or html text', function(done) {
     var id;
     request(app)
       .get('/api?url=http://www.google.com')
@@ -37,10 +37,11 @@ describe('GET /api/:id', function() {
           .expect('Content-Type', 'application/json; text/html; charset=utf-8')
           .expect(200)
           .end((err, res) => {
-            expect(res.body).to.have.property('state');
+            expect(res.body).to.satisfy(function(body) {
+              return typeof body === 'object' || typeof body === 'string';
+            });
             done();
           });
       });
-
   });
 })
